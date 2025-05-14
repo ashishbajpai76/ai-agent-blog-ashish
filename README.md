@@ -93,13 +93,5 @@ Powered by LangGraph, LangChain, and GitHub Pages
 
 ```
 
----
 
-Let me know if you'd like to:
-
-- Embed the LangGraph flow diagram image directly
-- Auto-open the blog URL after publishing
-- Add badges (e.g., `Python version`, `GitHub Pages build passing`)
-
-You're already publishing like an AI-native thought leader 🚀
 ```
