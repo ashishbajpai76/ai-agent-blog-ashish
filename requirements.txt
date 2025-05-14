@@ -1,0 +1,8 @@
+langgraph==0.0.33
+langchain==0.1.15
+langchain-core==0.1.53
+langchain-community==0.0.32
+langchain-openai
+openai
+python-dotenv
+GitPython
