@@ -15,7 +15,7 @@ llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 # ---- Agent Node Functions ----
 
 def researcher(state):
-    topic = state.get("topic", "Agentic AI Capabilities for Financial Services")
+    topic = state.get("topic", "Top Leadership Competencies in today's Corporate World")
     response = llm.invoke(f"Research and provide detailed points on: {topic}")
     return {**state, "research": response.content}
 
