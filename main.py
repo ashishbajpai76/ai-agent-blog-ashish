@@ -47,7 +47,7 @@ app = workflow.compile()
 
 # ---- Run Graph ----
 
-result = app.invoke({"topic": "Benefits of Agentic AI capabilities in Financial Services"})
+result = app.invoke({"topic": "What are the Top Leadership Competencies required in today's Corporate World"})
 
 print("\n--- Final Output ---")
 print("✅ Research:\n", result["research"])
@@ -57,7 +57,7 @@ print("\n🔍 Validation:\n", result["validation"])
 # ---- Save Markdown ----
 
 today = datetime.today().strftime('%Y-%m-%d')
-filename = f"{today}-gen-ai-finance.md"
+filename = f"{today}-gen-ai-leading-competencies.md"
 filepath = os.path.join("_posts", filename)
 
 markdown = f"""---
