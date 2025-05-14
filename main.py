@@ -61,7 +61,7 @@ filename = f"{today}-gen-ai-leading-competencies.md"
 filepath = os.path.join("_posts", filename)
 
 markdown = f"""---
-title: "Benefits of Agentic AI capabilities in Financial Services"
+title: "Top Leadership Competencies in today's Corporate World"
 date: {today}
 layout: post
 ---
