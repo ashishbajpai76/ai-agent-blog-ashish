@@ -45,6 +45,9 @@ Then generate and publish a post:
 ```bash
 python main.py        # Step 1: Generates Markdown post
 python commit_ashish.py  # Step 2: Commits & pushes it to GitHub Pages
+
+# Generate top value investing stock picks
+python value_investing_agents.py
 ```
 
 ---
