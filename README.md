@@ -93,8 +93,3 @@ python value_investing_agents.py
 
 Built by [Ashish Bajpai](https://github.com/ashishbajpai76)
 Powered by LangGraph, LangChain, and GitHub Pages
-
-```
-
-
-```

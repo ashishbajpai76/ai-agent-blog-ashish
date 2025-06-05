@@ -1,20 +1,34 @@
 import os
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Any
+import time
 
 import requests
 
 
 YAHOO_SCREENER_URL = "https://query1.finance.yahoo.com/v7/finance/screener/predefined/saved"
 YAHOO_QUOTE_URL = "https://query1.finance.yahoo.com/v11/finance/quoteSummary/{ticker}"
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+
+def fetch_json(url: str, params: Dict[str, str] | None = None, retries: int = 3) -> Dict:
+    """GET request with basic retry handling."""
+    for attempt in range(retries):
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=10)
+        if resp.status_code == 429 and attempt < retries - 1:
+            time.sleep(1)
+            continue
+        resp.raise_for_status()
+        return resp.json()
+    # if all retries exhausted, raise last error
+    resp.raise_for_status()
+    return {}
 
 
 def get_sp500_tickers() -> List[str]:
     """Fetch list of tickers in the S&P 500 index from Yahoo Finance."""
     params = {"scrIds": "SP500"}
-    resp = requests.get(YAHOO_SCREENER_URL, params=params, timeout=10)
-    resp.raise_for_status()
-    data = resp.json()
+    data = fetch_json(YAHOO_SCREENER_URL, params=params)
     quotes = data.get("finance", {}).get("result", [])[0].get("quotes", [])
     return [q["symbol"] for q in quotes]
 
@@ -27,9 +41,8 @@ def get_financial_ratios(ticker: str) -> Dict[str, float]:
         "price",
     ]
     url = YAHOO_QUOTE_URL.format(ticker=ticker)
-    resp = requests.get(url, params={"modules": ",".join(modules)}, timeout=10)
-    resp.raise_for_status()
-    summary = resp.json()["quoteSummary"]["result"][0]
+    data = fetch_json(url, params={"modules": ",".join(modules)})
+    summary = data["quoteSummary"]["result"][0]
 
     stats = summary.get("defaultKeyStatistics", {})
     fin = summary.get("financialData", {})
@@ -47,9 +60,8 @@ def get_qualitative_info(ticker: str) -> Dict[str, str]:
     """Fetch qualitative company information."""
     url = YAHOO_QUOTE_URL.format(ticker=ticker)
     modules = ["assetProfile"]
-    resp = requests.get(url, params={"modules": ",".join(modules)}, timeout=10)
-    resp.raise_for_status()
-    profile = resp.json()["quoteSummary"]["result"][0].get("assetProfile", {})
+    data = fetch_json(url, params={"modules": ",".join(modules)})
+    profile = data["quoteSummary"]["result"][0].get("assetProfile", {})
     return {
         "sector": profile.get("sector"),
         "industry": profile.get("industry"),
@@ -73,7 +85,7 @@ def compute_value_score(ratios: Dict[str, float]) -> float:
     return score
 
 
-def rank_stocks(tickers: List[str]) -> List[Dict[str, any]]:
+def rank_stocks(tickers: List[str]) -> List[Dict[str, Any]]:
     """Rank tickers by value score."""
     ranking = []
     for ticker in tickers:
@@ -87,6 +99,7 @@ def rank_stocks(tickers: List[str]) -> List[Dict[str, any]]:
                 "ratios": ratios,
                 "info": info,
             })
+            time.sleep(0.5)
         except Exception as e:
             print(f"Skipping {ticker}: {e}")
             continue
@@ -94,7 +107,7 @@ def rank_stocks(tickers: List[str]) -> List[Dict[str, any]]:
     return ranking
 
 
-def save_markdown(top_stocks: List[Dict[str, any]]) -> str:
+def save_markdown(top_stocks: List[Dict[str, Any]]) -> str:
     """Save ranking result to a markdown file in _posts/."""
     today = datetime.today().strftime("%Y-%m-%d")
     filename = f"{today}-value-investing-picks.md"
